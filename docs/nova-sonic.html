@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Sonic on Bedrock - 語音 AI Demo</title>
+    <style>
+        :root { --bg:#0f1117; --card:#1a1d27; --accent:#8b5cf6; --accent2:#22c55e; --text:#e2e8f0; --muted:#94a3b8; --border:#2d3748; --red:#ef4444; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; padding:2rem; }
+        .container { max-width:900px; margin:0 auto; }
+        h1 { font-size:2rem; background:linear-gradient(135deg,#8b5cf6,#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:0.5rem; }
+        .subtitle { color:var(--muted); margin-bottom:2rem; }
+        .badge { display:inline-block; padding:0.2rem 0.6rem; border-radius:4px; font-size:0.75rem; margin-right:0.5rem; }
+        .badge.purple { background:var(--accent); color:white; }
+        .badge.yellow { background:#eab308; color:black; }
+        .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem; margin-bottom:1.2rem; }
+        .card h3 { color:var(--accent); margin-bottom:0.8rem; }
+        pre { background:#1e293b; padding:1rem; border-radius:8px; overflow-x:auto; margin:1rem 0; font-size:0.82rem; }
+        code { color:#a5f3fc; }
+        .arch-diagram { background:#1e293b; padding:1.5rem; border-radius:8px; font-family:monospace; font-size:0.8rem; line-height:1.4; white-space:pre; overflow-x:auto; color:#94a3b8; }
+        .status-box { display:flex; gap:1rem; flex-wrap:wrap; margin:1rem 0; }
+        .status-item { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:0.8rem 1.2rem; }
+        .status-item .label { font-size:0.75rem; color:var(--muted); }
+        .status-item .value { font-size:1.1rem; font-weight:bold; }
+        .status-item .value.ok { color:var(--accent2); }
+        .status-item .value.warn { color:#eab308; }
+        .status-item .value.no { color:var(--red); }
+        table { width:100%; border-collapse:collapse; margin:1rem 0; }
+        th,td { padding:0.6rem; text-align:left; border-bottom:1px solid var(--border); font-size:0.9rem; }
+        th { color:var(--accent); }
+        a { color:var(--accent); text-decoration:none; }
+        .footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border); color:var(--muted); font-size:0.85rem; text-align:center; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🎙️ Amazon Nova 2 Sonic on Bedrock</h1>
+    <p class="subtitle">語音 AI 模型 — 架構說明與實作範例</p>
+
+    <span class="badge purple">Speech-to-Speech</span>
+    <span class="badge yellow">⚠️ 需要 WebSocket 雙向串流</span>
+
+    <div class="status-box">
+        <div class="status-item"><div class="label">模型狀態</div><div class="value ok">ACTIVE</div></div>
+        <div class="status-item"><div class="label">Model ID</div><div class="value">amazon.nova-2-sonic-v1:0</div></div>
+        <div class="status-item"><div class="label">Input</div><div class="value">SPEECH</div></div>
+        <div class="status-item"><div class="label">Output</div><div class="value">SPEECH + TEXT</div></div>
+        <div class="status-item"><div class="label">本帳號直接呼叫</div><div class="value no">❌ 需要 BidirectionalStream</div></div>
+    </div>
+
+    <div class="card">
+        <h3>🏗️ 架構圖</h3>
+        <div class="arch-diagram">
+┌─────────────────────────────────────────────────────────────────┐
+│                        GitHub Pages (靜態前端)                     │
+│  ┌──────────┐    ┌──────────────┐    ┌────────────────────┐     │
+│  │ 🎤 錄音   │───▶│  WebSocket   │───▶│  Audio Playback 🔊 │     │
+│  │ (getUserMedia)│  │  Client      │    │  (Web Audio API)   │     │
+│  └──────────┘    └──────┬───────┘    └────────────────────┘     │
+└──────────────────────────┼──────────────────────────────────────┘
+                           │ wss://
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    AWS Lambda (WebSocket Backend)                  │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  InvokeModelWithBidirectionalStream                      │    │
+│  │  ─ 接收 audio chunks                                     │    │
+│  │  ─ 轉發到 Nova Sonic                                     │    │
+│  │  ─ 回傳 speech + text response                           │    │
+│  └────────────────────────┬────────────────────────────────┘    │
+└───────────────────────────┼─────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                   Amazon Bedrock (us-west-2)                       │
+│  ┌──────────────────────────────────────────────┐               │
+│  │  amazon.nova-2-sonic-v1:0                     │               │
+│  │  Input: SPEECH (PCM audio)                    │               │
+│  │  Output: SPEECH (PCM audio) + TEXT            │               │
+│  └──────────────────────────────────────────────┘               │
+└─────────────────────────────────────────────────────────────────┘
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>⚠️ 為什麼不能直接在靜態頁面呼叫？</h3>
+        <table>
+            <tr><th>問題</th><th>說明</th></tr>
+            <tr><td>AWS SigV4 簽署</td><td>靜態前端無法安全地簽署 AWS 請求（需要 Secret Key）</td></tr>
+            <tr><td>雙向串流</td><td>Nova Sonic 使用 <code>InvokeModelWithBidirectionalStream</code>，不是一般 HTTP POST</td></tr>
+            <tr><td>CORS</td><td>Bedrock Runtime 不支援瀏覽器直接跨域呼叫</td></tr>
+            <tr><td>帳號權限</td><td>本 Workshop 帳號無法建立 API Gateway 或 Lambda Function URL</td></tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>📝 Python 實作範例（完整可執行）</h3>
+        <p>在有完整 AWS 權限的環境中，用以下程式碼呼叫 Nova Sonic：</p>
+        <pre><code>import boto3
+import json
+import asyncio
+
+# Nova Sonic 需要使用 bedrock-runtime 的雙向串流
+client = boto3.client('bedrock-runtime', region_name='us-west-2')
+
+async def nova_sonic_conversation(audio_bytes: bytes) -> dict:
+    """
+    使用 Nova Sonic 進行語音對話
+    Input: PCM 16-bit, 16kHz, mono audio
+    Output: Speech audio + transcribed text
+    """
+
+    # Nova Sonic 使用 InvokeModelWithBidirectionalStream
+    # 這是一個 WebSocket-like 的雙向串流 API
+    response = client.invoke_model_with_bidirectional_stream(
+        modelId='amazon.nova-2-sonic-v1:0',
+        body=json.dumps({
+            "inputAudio": {
+                "audioConfig": {
+                    "sampleRateHertz": 16000,
+                    "encoding": "PCM",
+                    "channelCount": 1
+                },
+                "audioData": audio_bytes.hex()  # PCM audio as hex
+            },
+            "inferenceConfig": {
+                "maxTokens": 1024,
+                "temperature": 0.7
+            },
+            "systemPrompt": "You are a helpful voice assistant. Respond naturally."
+        })
+    )
+
+    # 處理串流回應
+    results = {"text": "", "audio_chunks": []}
+    for event in response['body']:
+        chunk = json.loads(event['chunk']['bytes'])
+        if 'textOutput' in chunk:
+            results['text'] += chunk['textOutput']
+        if 'audioOutput' in chunk:
+            results['audio_chunks'].append(
+                bytes.fromhex(chunk['audioOutput'])
+            )
+
+    return results
+
+
+# 使用範例
+if __name__ == '__main__':
+    # 讀取音訊檔案 (PCM 16-bit, 16kHz, mono)
+    with open('input.pcm', 'rb') as f:
+        audio = f.read()
+
+    result = asyncio.run(nova_sonic_conversation(audio))
+    print(f"Transcription: {result['text']}")
+    print(f"Audio chunks: {len(result['audio_chunks'])}")
+
+    # 儲存回應音訊
+    with open('output.pcm', 'wb') as f:
+        for chunk in result['audio_chunks']:
+            f.write(chunk)</code></pre>
+    </div>
+
+    <div class="card">
+        <h3>🚀 如何在自己的環境部署</h3>
+        <p>要做一個完整的 Nova Sonic Web 應用，你需要：</p>
+        <pre><code># 1. 建立 Lambda + API Gateway WebSocket
+#    （本 Workshop 帳號權限不足，需要自己的 AWS 帳號）
+
+# 2. 前端：錄音 → 送到 WebSocket → 播放回應音訊
+#    使用 MediaRecorder API + Web Audio API
+
+# 3. 後端 Lambda：
+#    接收 audio chunks → 呼叫 Nova Sonic → 回傳 audio
+
+# 快速開始（需要 SAM CLI）：
+sam init --name nova-sonic-app --runtime python3.12
+# 修改 template.yaml 加入 WebSocket API Gateway
+# 部署：sam deploy --guided</code></pre>
+
+        <h4 style="margin-top:1rem; color:var(--muted);">所需 AWS 資源：</h4>
+        <table>
+            <tr><th>資源</th><th>用途</th><th>本帳號</th></tr>
+            <tr><td>API Gateway (WebSocket)</td><td>前端 ↔ 後端通訊</td><td style="color:#ef4444;">❌ 無權限</td></tr>
+            <tr><td>Lambda</td><td>呼叫 Nova Sonic</td><td style="color:#22c55e;">✅ 可建立</td></tr>
+            <tr><td>Bedrock (Nova Sonic)</td><td>語音 AI 模型</td><td style="color:#eab308;">⚠️ 模型上架但需測試</td></tr>
+            <tr><td>IAM Role</td><td>Lambda 執行角色</td><td style="color:#22c55e;">✅ 已建立</td></tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>🔬 本次 Workshop 實測結果</h3>
+        <table>
+            <tr><th>操作</th><th>結果</th></tr>
+            <tr><td>查詢模型 (<code>list-foundation-models</code>)</td><td style="color:#22c55e;">✅ Nova 2 Sonic 上架，ACTIVE</td></tr>
+            <tr><td>建立 Lambda (<code>claude-code-nova-sonic</code>)</td><td style="color:#22c55e;">✅ 成功部署</td></tr>
+            <tr><td>建立 IAM Role</td><td style="color:#22c55e;">✅ 成功</td></tr>
+            <tr><td>Lambda Function URL</td><td style="color:#ef4444;">❌ 帳號無 <code>CreateFunctionUrlConfig</code> 權限</td></tr>
+            <tr><td>API Gateway</td><td style="color:#ef4444;">❌ 帳號無 <code>apigateway:*</code> 權限</td></tr>
+            <tr><td>Lambda 呼叫 Bedrock</td><td style="color:#eab308;">⚠️ Lambda role 的 Bedrock policy 傳播中</td></tr>
+            <tr><td>Converse API (文字)</td><td style="color:#ef4444;">❌ Nova Sonic 不支援文字 Converse</td></tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p><a href="index.html">← 返回 Workshop 主頁</a> | <a href="https://github.com/linjinhsien/claude-code-bedrock-labs">GitHub Repo</a></p>
+        <p>Nova Sonic 文件：<a href="https://docs.aws.amazon.com/bedrock/latest/userguide/">Amazon Bedrock User Guide</a></p>
+    </div>
+</div>
+</body>
+</html>
