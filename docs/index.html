@@ -163,6 +163,69 @@
                 <tr><td>密碼外洩</td><td>🟠 高</td><td>API 回應包含明文密碼</td></tr>
                 <tr><td>Debug 模式</td><td>🟠 高</td><td>暴露 Werkzeug debugger</td></tr>
             </table>
+
+            <h4 style="margin-top:1.2rem; color:#ef4444;">❌ 有漏洞的原始程式碼</h4>
+            <pre><code>import os
+import sqlite3
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/user')
+def get_user():
+    name = request.args.get('name')
+    db = sqlite3.connect('app.db')
+    # ⚠️ SQL Injection！直接拼接使用者輸入
+    result = db.execute(f"SELECT * FROM users WHERE name = '{name}'")
+    return jsonify({"user": result.fetchone()})
+
+@app.route('/login', methods=['POST'])
+def login():
+    pw = request.json['password']
+    db = sqlite3.connect('app.db')
+    # ⚠️ SQL Injection + 密碼明文比對
+    r = db.execute(f"SELECT * FROM users WHERE password = '{pw}'")
+    if r.fetchone():
+        # ⚠️ 回傳密碼給客戶端！
+        return jsonify({"token": os.urandom(16).hex(), "password": pw})
+    return "fail", 401
+
+if __name__ == '__main__':
+    # ⚠️ Debug 模式 + 綁定所有介面
+    app.run(debug=True, host='0.0.0.0')</code></pre>
+
+            <h4 style="margin-top:1.2rem; color:#22c55e;">✅ Claude Code 修正後的程式碼</h4>
+            <pre><code>import os
+import sqlite3
+from flask import Flask, request, jsonify
+from werkzeug.security import check_password_hash
+
+app = Flask(__name__)
+
+@app.route('/user')
+def get_user():
+    name = request.args.get('name')
+    db = sqlite3.connect('app.db')
+    # ✅ 使用參數化查詢防止 SQL Injection
+    result = db.execute("SELECT * FROM users WHERE name = ?", (name,))
+    return jsonify({"user": result.fetchone()})
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    pw = data['password']
+    db = sqlite3.connect('app.db')
+    # ✅ 參數化查詢 + 用 name 而非 password 查詢
+    r = db.execute("SELECT * FROM users WHERE name = ?", (data['name'],))
+    user = r.fetchone()
+    # ✅ 使用雜湊比對，不回傳密碼
+    if user and check_password_hash(user['password_hash'], pw):
+        return jsonify({"token": os.urandom(16).hex()})
+    return jsonify({"error": "invalid credentials"}), 401
+
+if __name__ == '__main__':
+    # ✅ 關閉 debug、限制監聽介面
+    app.run(debug=False, host='127.0.0.1')</code></pre>
         </div>
 
         <h2 style="margin: 2rem 0 1rem;">⚙️ 環境資訊</h2>
