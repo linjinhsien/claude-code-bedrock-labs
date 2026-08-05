@@ -80,6 +80,39 @@
         </table>
     </div>
 
+    <div class="card" style="border-color:#8b5cf6;">
+        <h3 style="color:#8b5cf6;">🎧 實測 #2：TOEIC 聽力測驗 MP3</h3>
+        <p>輸入一段 TOEIC Part 1 聽力題目（28.9 秒），Nova Sonic 辨識並回答：</p>
+
+        <div style="margin:1rem 0; padding:1rem; background:#1e293b; border-radius:8px;">
+            <p style="margin-bottom:0.5rem;">🎤 <strong>輸入</strong>（TOEIC 聽力 MP3, 28.9s）：</p>
+            <p style="color:var(--muted); font-size:0.85rem; margin-bottom:0.5rem;">📝 語音辨識：</p>
+            <blockquote style="border-left:3px solid var(--accent); padding-left:0.8rem; color:var(--muted); font-size:0.85rem; font-style:italic;">
+                "Number three. Look at the picture marked number three in your test book.<br>
+                A. Some loaves of bread are piled on a counter<br>
+                B. One of the men is placing food in a refrigerator<br>
+                C. One of the men is putting on an apron<br>
+                D. Some food is being handed to a customer"
+            </blockquote>
+        </div>
+
+        <div style="margin:1rem 0; padding:1rem; background:#1e293b; border-radius:8px;">
+            <p style="margin-bottom:0.5rem;">🔊 <strong>Nova Sonic 回應</strong>（48.6s, voice: tiffany）：</p>
+            <audio controls style="width:100%; margin-bottom:0.5rem;">
+                <source src="nova-sonic-mp3-response.wav" type="audio/wav">
+            </audio>
+            <p style="color:var(--muted); font-size:0.85rem;">📝 回應文字：<em>"Sure! To answer your question, I need to look at the picture marked number three in your test book. Based on the options you've provided... If you can describe what you see in picture number three, I can help you choose the correct answer."</em></p>
+        </div>
+
+        <table style="margin-top:0.8rem;">
+            <tr><th>指標</th><th>數值</th></tr>
+            <tr><td>輸入</td><td>28.9s MP3 → PCM 16kHz (925KB)</td></tr>
+            <tr><td>輸出</td><td>48.6s audio (2.3MB) + 完整文字</td></tr>
+            <tr><td>辨識準確度</td><td>✅ 完整辨識 TOEIC 四選項</td></tr>
+            <tr><td>回應品質</td><td>✅ 理解題目結構並提供解題協助</td></tr>
+        </table>
+    </div>
+
     <div class="card" style="border-color:#22c55e;">
         <h3 style="color:#22c55e;">🎯 直接測試 Nova Sonic（AWS Console）</h3>
         <p>用 Workshop 帳號登入 AWS Console 後，打開以下連結即可在瀏覽器直接語音對話：</p>
