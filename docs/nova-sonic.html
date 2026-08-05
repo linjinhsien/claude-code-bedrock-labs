@@ -49,6 +49,48 @@
         <div class="status-item"><div class="label">本帳號直接呼叫</div><div class="value no">❌ 需要 BidirectionalStream</div></div>
     </div>
 
+    <div class="card" style="border-color:#22c55e;">
+        <h3 style="color:#22c55e;">🎯 直接測試 Nova Sonic（AWS Console）</h3>
+        <p>用 Workshop 帳號登入 AWS Console 後，打開以下連結即可在瀏覽器直接語音對話：</p>
+        <p style="margin:1rem 0;">
+            <a href="https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/speech" 
+               target="_blank" 
+               style="display:inline-block; background:var(--accent2); color:black; padding:0.6rem 1.2rem; border-radius:6px; font-weight:bold; text-decoration:none;">
+                🎙️ 打開 Bedrock Speech Playground →
+            </a>
+        </p>
+        <p style="color:var(--muted); font-size:0.85rem;">Console 內建 WebSocket 雙向串流前端，不需要額外安裝任何東西。</p>
+        <p style="margin-top:0.8rem; color:var(--muted); font-size:0.85rem;">其他 Console 連結：</p>
+        <ul style="color:var(--muted); font-size:0.85rem; margin-left:1.2rem;">
+            <li><a href="https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/model-catalog/amazon.nova-2-sonic-v1:0" target="_blank">Nova Sonic Model Catalog</a></li>
+            <li><a href="https://us-east-1.console.aws.amazon.com/bedrock/home?region=us-east-1#/chat-playground?modelId=amazon.nova-2-sonic-v1:0" target="_blank">Chat Playground</a></li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h3>💻 本機執行（Python）</h3>
+        <p>如果要在自己電腦上跑 Nova Sonic（需要麥克風）：</p>
+        <pre><code># 1. 安裝特殊 SDK（不是一般的 boto3）
+pip install aws-sdk-bedrock-runtime pyaudio
+
+# 2. 設定 AWS credentials
+export AWS_ACCESS_KEY_ID="你的 Access Key"
+export AWS_SECRET_ACCESS_KEY="你的 Secret Key"
+export AWS_SESSION_TOKEN="你的 Session Token"
+export AWS_DEFAULT_REGION="us-east-1"
+
+# 3. Clone 官方範例
+git clone https://github.com/aws-samples/amazon-nova-samples
+cd amazon-nova-samples/speech-to-speech/amazon-nova-2-sonic/
+
+# 4. 執行
+python simple_example.py</code></pre>
+        <p style="margin-top:0.8rem; color:var(--muted); font-size:0.85rem;">
+            📖 官方文件：<a href="https://docs.aws.amazon.com/nova/latest/nova2-userguide/sonic-getting-started.html" target="_blank">Getting started with speech-to-speech</a><br>
+            📦 範例程式碼：<a href="https://github.com/aws-samples/amazon-nova-samples/tree/main/speech-to-speech/amazon-nova-2-sonic" target="_blank">GitHub - amazon-nova-samples</a>
+        </p>
+    </div>
+
     <div class="card">
         <h3>🏗️ 架構圖</h3>
         <div class="arch-diagram">
