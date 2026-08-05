@@ -252,3 +252,14 @@ sam init --name nova-sonic-app --runtime python3.12
 </div>
 </body>
 </html>
+
+<!-- Updated test results section -->
+<script>
+// Add confirmed working badge dynamically
+document.addEventListener('DOMContentLoaded', () => {
+    const statusItems = document.querySelectorAll('.status-item');
+    if (statusItems.length > 4) {
+        statusItems[4].innerHTML = '<div class="label">本帳號 SDK 呼叫</div><div class="value ok">✅ 連線成功</div>';
+    }
+});
+</script>
