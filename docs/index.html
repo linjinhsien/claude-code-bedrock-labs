@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code on Bedrock - Workshop 實作</title>
+    <style>
+        :root {
+            --bg: #0f1117;
+            --card: #1a1d27;
+            --accent: #6366f1;
+            --accent2: #22c55e;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --border: #2d3748;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #6366f1, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .subtitle { color: var(--muted); margin-bottom: 2rem; font-size: 1.1rem; }
+        .badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+        }
+        .badge.green { background: var(--accent2); }
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.2rem;
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-2px); border-color: var(--accent); }
+        .card h3 { color: var(--accent); margin-bottom: 0.5rem; }
+        .card p { color: var(--muted); font-size: 0.95rem; }
+        .status { color: var(--accent2); font-weight: bold; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+        .stat-box {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        .stat-box .number { font-size: 2rem; font-weight: bold; color: var(--accent); }
+        .stat-box .label { color: var(--muted); font-size: 0.85rem; }
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        th, td { padding: 0.7rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { color: var(--accent); font-weight: 600; }
+        code {
+            background: #2d3748;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: #a5f3fc;
+        }
+        pre {
+            background: #1e293b;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+        }
+        pre code { background: none; padding: 0; }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.85rem; text-align: center; }
+        .models-scroll { max-height: 200px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Claude Code on Bedrock</h1>
+        <p class="subtitle">Workshop 實作紀錄 — by linjinhsien</p>
+
+        <span class="badge">AWS Bedrock</span>
+        <span class="badge green">All Labs Passed ✓</span>
+        <span class="badge">us-west-2</span>
+
+        <div class="grid">
+            <div class="stat-box">
+                <div class="number">4</div>
+                <div class="label">Labs 完成</div>
+            </div>
+            <div class="stat-box">
+                <div class="number">12</div>
+                <div class="label">可用 Claude 模型</div>
+            </div>
+            <div class="stat-box">
+                <div class="number">4</div>
+                <div class="label">安全漏洞發現</div>
+            </div>
+            <div class="stat-box">
+                <div class="number">v2.1</div>
+                <div class="label">Claude Code 版本</div>
+            </div>
+        </div>
+
+        <h2 style="margin: 2rem 0 1rem;">📋 Lab 實作結果</h2>
+
+        <div class="card">
+            <h3>Lab 1：設定 Claude Code + Bedrock</h3>
+            <p>配置 AWS credentials、安裝 Claude Code、建立 settings.json、驗證 Bedrock 連線</p>
+            <p class="status">✅ Bedrock 連線成功</p>
+        </div>
+
+        <div class="card">
+            <h3>Lab 2：基本操作示範</h3>
+            <p>問答、程式碼生成（Fibonacci generator）、JSON 輸出格式</p>
+            <pre><code>def fibonacci():
+    a, b = 0, 1
+    while True:
+        yield a
+        a, b = b, a + b</code></pre>
+        </div>
+
+        <div class="card">
+            <h3>Lab 3：Bedrock 模型管理</h3>
+            <p>列出所有可用的 Anthropic Claude 模型</p>
+            <div class="models-scroll">
+                <table>
+                    <tr><th>Model</th><th>Version</th></tr>
+                    <tr><td>Claude Opus 5</td><td>Latest</td></tr>
+                    <tr><td>Claude Opus 4.8</td><td>Latest</td></tr>
+                    <tr><td>Claude Opus 4.7</td><td>Latest</td></tr>
+                    <tr><td>Claude Opus 4.6</td><td>Latest</td></tr>
+                    <tr><td>Claude Sonnet 5</td><td>Latest</td></tr>
+                    <tr><td>Claude Sonnet 4.6</td><td>Latest</td></tr>
+                    <tr><td>Claude Sonnet 4.5</td><td>2025-09-29</td></tr>
+                    <tr><td>Claude Fable 5</td><td>Latest</td></tr>
+                    <tr><td>Claude Haiku 4.5</td><td>2025-10-01</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Lab 4：自動化 Code Review</h3>
+            <p>Claude Code 自動找出 Flask 應用的安全漏洞：</p>
+            <table>
+                <tr><th>漏洞</th><th>嚴重度</th><th>說明</th></tr>
+                <tr><td>SQL Injection</td><td>🔴 嚴重</td><td>使用者輸入直接拼接 SQL</td></tr>
+                <tr><td>密碼明文</td><td>🔴 嚴重</td><td>未經雜湊儲存與比對</td></tr>
+                <tr><td>密碼外洩</td><td>🟠 高</td><td>API 回應包含明文密碼</td></tr>
+                <tr><td>Debug 模式</td><td>🟠 高</td><td>暴露 Werkzeug debugger</td></tr>
+            </table>
+        </div>
+
+        <h2 style="margin: 2rem 0 1rem;">⚙️ 環境資訊</h2>
+        <div class="card">
+            <table>
+                <tr><td>AWS Account</td><td><code>481665125543</code></td></tr>
+                <tr><td>Region</td><td><code>us-west-2</code></td></tr>
+                <tr><td>Role</td><td><code>WSParticipantRole</code></td></tr>
+                <tr><td>Claude Code</td><td><code>v2.1.222</code></td></tr>
+                <tr><td>Provider</td><td><code>Amazon Bedrock</code></td></tr>
+                <tr><td>OS</td><td><code>Debian 13 (k3s pod)</code></td></tr>
+                <tr><td>執行日期</td><td><code>2026-08-05</code></td></tr>
+            </table>
+        </div>
+
+        <h2 style="margin: 2rem 0 1rem;">🚀 快速開始</h2>
+        <div class="card">
+            <pre><code># 安裝 Claude Code
+npm install -g @anthropic-ai/claude-code
+
+# 設定 Bedrock
+export AWS_DEFAULT_REGION="us-west-2"
+export CLAUDE_CODE_USE_BEDROCK=1
+
+# 開始使用
+claude -p "Hello from Bedrock!"</code></pre>
+        </div>
+
+        <div class="footer">
+            <p>Built with Claude Code on Amazon Bedrock | <a href="https://github.com/linjinhsien/claude-code-bedrock-labs">View Source on GitHub</a></p>
+            <p>Workshop: <a href="https://catalog.us-east-1.prod.workshops.aws/workshops/d26e21f4-3360-468f-b3b0-761e768d0427/en-US">Claude Code on Amazon Bedrock</a></p>
+        </div>
+    </div>
+</body>
+</html>
