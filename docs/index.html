@@ -103,7 +103,7 @@
                 <div class="label">Labs 完成</div>
             </div>
             <div class="stat-box">
-                <div class="number">12</div>
+                <div class="number">2</div>
                 <div class="label">可用 Claude 模型</div>
             </div>
             <div class="stat-box">
@@ -136,21 +136,24 @@
 
         <div class="card">
             <h3>Lab 3：Bedrock 模型管理</h3>
-            <p>列出所有可用的 Anthropic Claude 模型</p>
+            <p>實測各模型是否可呼叫（需使用 cross-region inference profile <code>us.*</code>）</p>
             <div class="models-scroll">
                 <table>
-                    <tr><th>Model</th><th>Version</th></tr>
-                    <tr><td>Claude Opus 5</td><td>Latest</td></tr>
-                    <tr><td>Claude Opus 4.8</td><td>Latest</td></tr>
-                    <tr><td>Claude Opus 4.7</td><td>Latest</td></tr>
-                    <tr><td>Claude Opus 4.6</td><td>Latest</td></tr>
-                    <tr><td>Claude Sonnet 5</td><td>Latest</td></tr>
-                    <tr><td>Claude Sonnet 4.6</td><td>Latest</td></tr>
-                    <tr><td>Claude Sonnet 4.5</td><td>2025-09-29</td></tr>
-                    <tr><td>Claude Fable 5</td><td>Latest</td></tr>
-                    <tr><td>Claude Haiku 4.5</td><td>2025-10-01</td></tr>
+                    <tr><th>Model</th><th>Profile ID</th><th>實測狀態</th></tr>
+                    <tr><td>Claude Sonnet 4.6</td><td><code>us.anthropic.claude-sonnet-4-6</code></td><td style="color:#22c55e;">✅ 可用</td></tr>
+                    <tr><td>Claude Haiku 4.5</td><td><code>us.anthropic.claude-haiku-4-5-20251001-v1:0</code></td><td style="color:#22c55e;">✅ 可用</td></tr>
+                    <tr><td>Claude Opus 5</td><td><code>us.anthropic.claude-opus-5</code></td><td style="color:#ef4444;">❌ 帳號無權限</td></tr>
+                    <tr><td>Claude Opus 4.8</td><td><code>us.anthropic.claude-opus-4-8</code></td><td style="color:#ef4444;">❌ 帳號無權限</td></tr>
+                    <tr><td>Claude Sonnet 5</td><td><code>us.anthropic.claude-sonnet-5</code></td><td style="color:#ef4444;">❌ 帳號無權限</td></tr>
+                    <tr><td>Claude Fable 5</td><td><code>us.anthropic.claude-fable-5</code></td><td style="color:#ef4444;">❌ 帳號無權限</td></tr>
+                    <tr><td>Claude Sonnet 4 (原版)</td><td><code>us.anthropic.claude-sonnet-4-20250514-v1:0</code></td><td style="color:#ef4444;">❌ 帳號無權限</td></tr>
                 </table>
             </div>
+            <p style="margin-top:0.8rem; color:var(--muted); font-size:0.85rem;">
+                ⚠️ <code>list-foundation-models</code> 列出的是 Bedrock 上架的模型，不代表帳號有權限呼叫。<br>
+                高階模型（Opus 5、Sonnet 5）需另向 AWS 申請 access。<br>
+                Claude Code 會自動 fallback 到可用模型（本帳號實際使用 Sonnet 4.6）。
+            </p>
         </div>
 
         <div class="card">
